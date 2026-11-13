@@ -121,29 +121,31 @@ def extract_earthquake_details(root):
         "Observation", "MaxInt"
     )
 
-    if earthquake is None:
-        earthquake = None
-
     origin_time = (
         get_text(earthquake, "OriginTime")
         if earthquake is not None else ""
     )
 
-    hypocenter = find_element(
-        earthquake, "Hypocenter"
-    ) if earthquake is not None else None
+    hypocenter = (
+        find_element(earthquake, "Hypocenter")
+        if earthquake is not None else None
+    )
 
-    area = find_element(hypocenter, "Area") \
+    area = (
+        find_element(hypocenter, "Area")
         if hypocenter is not None else None
+    )
 
     epicenter = (
         get_text(area, "Name")
         if area is not None else ""
     )
 
-    magnitude_element = find_element(
-        earthquake, "Magnitude"
-    ) if earthquake is not None else None
+    # マグニチュード
+    magnitude_element = (
+        find_element(earthquake, "Magnitude")
+        if earthquake is not None else None
+    )
 
     magnitude = ""
 
@@ -153,6 +155,31 @@ def extract_earthquake_details(root):
             or (magnitude_element.text or "").strip()
         )
 
+    # 震源の深さ
+    coordinate = (
+        find_element(area, "Coordinate")
+        if area is not None else None
+    )
+
+    depth = ""
+
+    if coordinate is not None:
+        description = to_half_width(
+            coordinate.get("description", "")
+        )
+
+        match = re.search(
+            r"深さ\s*([0-9]+)\s*km",
+            description
+        )
+
+        if match:
+            depth = match.group(1) + "km"
+
+        elif "ごく浅い" in description:
+            depth = "ごく浅い"
+
+    # 最大震度
     max_intensity = (
         (intensity.text or "").strip()
         if intensity is not None else ""
@@ -160,9 +187,10 @@ def extract_earthquake_details(root):
 
     return {
         "origin_time": origin_time,
-        "epicenter": epicenter,
-        "magnitude": magnitude,
-        "max_intensity": max_intensity
+        "epicenter": to_half_width(epicenter),
+        "magnitude": to_half_width(magnitude),
+        "depth": depth,
+        "max_intensity": to_half_width(max_intensity)
     }
 
 def fetch_feed():
