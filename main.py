@@ -47,6 +47,22 @@ def get_text(element, *path):
 
     return (current.text or "").strip()
 
+def find_element(element, *path):
+    current = element
+
+    for name in path:
+        current = next(
+            (
+                child for child in current
+                if child.tag.split("}")[-1] == name
+            ),
+            None
+        )
+
+        if current is None:
+            return None
+
+    return current
 
 def fetch_feed():
     return fetch_xml(URL)
