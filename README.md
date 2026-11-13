@@ -1,2 +1,41 @@
-# earthquake-notification-bot-GPT
-JMA Earthquake Notification Bot
+# Earthquake Notification Bot
+
+気象庁の地震情報を取得し、Telegramへ通知するボットです。
+
+## 通知対象
+
+- 震度速報
+- 震源に関する情報
+- 震源・震度情報
+- 長周期地震動に関する観測情報
+- 遠地地震に関する情報
+- 上記以外の地震関連情報（その他の地震情報）
+
+津波関連情報は通知しません。
+
+## 通知時刻
+
+- 地震発生時刻：秒を表示しません。
+- 発表時刻：XMLに秒がある場合は秒まで表示します。
+- 日付と時刻の間は半角スペースです。
+
+## 通知処理
+
+- 取得できた未通知情報を件数制限なしで処理します。
+- 発表時刻の古い順に通知します。
+- 送信に失敗した場合は後続の通知を止め、次回実行で再試行します。
+- Telegramへの連続送信を避けるため、通知間に約1.1秒の間隔を設けます。
+
+## 通知履歴
+
+`seen_ids.json` に通知済みの電文IDを保存します。
+GitHub Actionsが実行後にこのファイルをリポジトリへコミット・プッシュします。
+
+GitHub Actionsには `contents: write` 権限が必要です。
+
+## GitHub Secrets
+
+リポジトリの Actions secrets に次の2つを登録してください。
+
+- `TELEGRAM_BOT_TOKEN`
+- `TELEGRAM_CHAT_ID`
