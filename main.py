@@ -300,6 +300,22 @@ def send_telegram(message):
         print("Telegram送信エラー:", e)
         return False
 
+
+def load_seen_ids():
+
+    filename = "seen_ids.json"
+
+    if not os.path.exists(filename):
+        return []
+
+    try:
+        with open(filename, "r", encoding="utf-8") as f:
+            return json.load(f)
+
+    except (json.JSONDecodeError, OSError):
+        print("通知履歴の読み込みに失敗しました")
+        return []
+
 def main():
 
     parser = argparse.ArgumentParser()
