@@ -234,12 +234,21 @@ def fetch_detail(url):
 
 def print_entries(entries):
 
+    seen_ids = load_seen_ids()
+    new_seen_ids = list(seen_ids)
+
     for e in entries:
+
+        entry_id = e["id"]
+
+        # 通知済みならスキップ
+        if entry_id in seen_ids:
+            print("通知済みのためスキップ:", entry_id)
+            continue
 
         detail = fetch_detail(e["link"])
 
         title = detail["title"] or e["title"]
-
         category = classify_information(title)
 
         message = (
@@ -257,7 +266,15 @@ def print_entries(entries):
         print("-" * 35)
         print(message)
 
-        send_telegram(message)
+        # 送信成功した場合だけ履歴に追加
+        if send_telegram(message):
+            new_seen_ids.append(entry_id)
+
+    # 最新500件だけ保存
+    new_seen_ids = list(dict.fromkeys(new_seen_ids))[-500:]
+
+    save_seen_ids(new_seen_ids)
+
 
 def send_telegram(message):
 
