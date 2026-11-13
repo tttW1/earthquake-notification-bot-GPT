@@ -309,7 +309,7 @@ def print_entries(entries):
 
         entry_id = e["id"]
 
-        if entry_id in seen_ids:
+        if False and entry_id in seen_ids:
             print("通知済みのためスキップ:", entry_id)
             continue
 
