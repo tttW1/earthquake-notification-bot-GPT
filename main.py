@@ -312,7 +312,6 @@ def print_entries(entries):
 
         entry_id = e["id"]
 
-        # 通知済みならスキップ
         if entry_id in seen_ids:
             print("通知済みのためスキップ:", entry_id)
             continue
@@ -322,30 +321,36 @@ def print_entries(entries):
         title = detail["title"] or e["title"]
         category = classify_information(title)
 
+        origin_time = format_time(
+            detail["origin_time"]
+        )
+
+        updated_time = format_time(
+            e["updated"]
+        )
+
         message = (
             f"【地震情報】\n"
-            f"情報名：{title}\n"
-            f"分類：{category}\n"
-            f"発生時刻：{detail['origin_time'] or '未掲載'}\n"
-            f"震央地名：{detail['epicenter'] or '未掲載'}\n"
-            f"マグニチュード：{detail['magnitude'] or '未掲載'}\n"
-            f"最大震度：{detail['max_intensity'] or '未掲載'}\n"
-            f"更新：{e['updated']}\n"
+            f"情報名：{to_half_width(title)}\n"
+            f"分類：{to_half_width(category)}\n"
+            f"発生時刻：{origin_time}\n"
+            f"震央地名：{to_half_width(detail['epicenter']) or '未掲載'}\n"
+            f"震源の深さ：{detail['depth'] or '未掲載'}\n"
+            f"マグニチュード：{to_half_width(detail['magnitude']) or '未掲載'}\n"
+            f"最大震度：{to_half_width(detail['max_intensity']) or '未掲載'}\n"
+            f"更新：{updated_time}\n"
             f"詳細：{e['link']}"
         )
 
         print("-" * 35)
         print(message)
 
-        # 送信成功した場合だけ履歴に追加
         if send_telegram(message):
             new_seen_ids.append(entry_id)
 
-    # 最新500件だけ保存
     new_seen_ids = list(dict.fromkeys(new_seen_ids))[-500:]
 
     save_seen_ids(new_seen_ids)
-
 
 def send_telegram(message):
 
