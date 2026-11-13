@@ -136,8 +136,8 @@ def fetch_detail(url):
         root = SafeET.fromstring(xml_data)
 
         return (
-            get_text(root, "Control", "Title")
-            or get_text(root, "Head", "Title")
+            get_text(root, "Head", "Title")
+            or get_text(root, "Control", "Title")
         )
 
     except Exception as e:
