@@ -242,16 +242,22 @@ def print_entries(entries):
 
         category = classify_information(title)
 
+        message = (
+            f"【地震情報】\n"
+            f"情報名：{title}\n"
+            f"分類：{category}\n"
+            f"発生時刻：{detail['origin_time'] or '未掲載'}\n"
+            f"震央地名：{detail['epicenter'] or '未掲載'}\n"
+            f"マグニチュード：{detail['magnitude'] or '未掲載'}\n"
+            f"最大震度：{detail['max_intensity'] or '未掲載'}\n"
+            f"更新：{e['updated']}\n"
+            f"詳細：{e['link']}"
+        )
+
         print("-" * 35)
-        print("情報名 :", title)
-        print("分類   :", category)
-        print("更新   :", e["updated"])
-        print("発生時刻 :", detail["origin_time"] or "未掲載")
-        print("震央地名 :", detail["epicenter"] or "未掲載")
-        print("M値     :", detail["magnitude"] or "未掲載")
-        print("最大震度 :", detail["max_intensity"] or "未掲載")
-        print("ID     :", e["id"])
-        print("詳細   :", e["link"])
+        print(message)
+
+        send_telegram(message)
 
 def send_telegram(message):
 
