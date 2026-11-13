@@ -1,3 +1,5 @@
+import re
+from datetime import datetime, timezone, timedelta
 import urllib.parse
 import os
 import json
@@ -66,6 +68,47 @@ def find_element(element, *path):
             return None
 
     return current
+
+def to_half_width(text):
+    table = str.maketrans(
+        "０１２３４５６７８９",
+        "0123456789"
+    )
+    return str(text).translate(table)
+
+
+def format_time(value):
+
+    if not value:
+        return "未掲載"
+
+    try:
+        dt = datetime.fromisoformat(
+            value.replace("Z", "+00:00")
+        )
+
+        if dt.tzinfo is None:
+            dt = dt.replace(
+                tzinfo=timezone(timedelta(hours=9))
+            )
+
+        dt = dt.astimezone(
+            timezone(timedelta(hours=9))
+        )
+
+        result = (
+            f"{dt.year}年{dt.month}月{dt.day}日 "
+            f"{dt.hour:02d}:{dt.minute:02d}"
+        )
+
+        # 元データに秒が含まれている場合だけ表示
+        if re.search(r"T\d{2}:\d{2}:\d{2}", value):
+            result += f":{dt.second:02d}"
+
+        return result
+
+    except ValueError:
+        return to_half_width(value)
 
 def extract_earthquake_details(root):
 
