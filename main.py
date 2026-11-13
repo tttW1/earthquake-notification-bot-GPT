@@ -1,3 +1,4 @@
+import unicodedata
 import re
 from datetime import datetime, timezone, timedelta
 import urllib.parse
@@ -70,11 +71,7 @@ def find_element(element, *path):
     return current
 
 def to_half_width(text):
-    table = str.maketrans(
-        "０１２３４５６７８９",
-        "0123456789"
-    )
-    return str(text).translate(table)
+    return unicodedata.normalize("NFKC", str(text))
 
 
 def format_time(value):
