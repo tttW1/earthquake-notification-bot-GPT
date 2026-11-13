@@ -199,30 +199,43 @@ def classify_information(title):
 
 def fetch_detail(url):
 
+    result = {
+        "title": "",
+        "origin_time": "",
+        "epicenter": "",
+        "magnitude": "",
+        "max_intensity": ""
+    }
+
     if not url:
-        return ""
+        return result
 
     try:
         xml_data = fetch_xml(url)
         root = SafeET.fromstring(xml_data)
 
-        return (
+        result["title"] = (
             get_text(root, "Head", "Title")
             or get_text(root, "Control", "Title")
         )
 
+        result.update(
+            extract_earthquake_details(root)
+        )
+
     except Exception as e:
         print("詳細情報取得エラー:", e)
-        return ""
+
+    return result
 
 
 def print_entries(entries):
 
     for e in entries:
 
-        detail_title = fetch_detail(e["link"])
+        detail = fetch_detail(e["link"])
 
-        title = detail_title or e["title"]
+        title = detail["title"] or e["title"]
 
         category = classify_information(title)
 
@@ -230,9 +243,12 @@ def print_entries(entries):
         print("情報名 :", title)
         print("分類   :", category)
         print("更新   :", e["updated"])
+        print("発生時刻 :", detail["origin_time"] or "未掲載")
+        print("震央地名 :", detail["epicenter"] or "未掲載")
+        print("M値     :", detail["magnitude"] or "未掲載")
+        print("最大震度 :", detail["max_intensity"] or "未掲載")
         print("ID     :", e["id"])
         print("詳細   :", e["link"])
-
 
 def main():
 
