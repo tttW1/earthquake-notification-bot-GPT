@@ -252,6 +252,47 @@ def print_entries(entries):
         print("ID     :", e["id"])
         print("詳細   :", e["link"])
 
+def send_telegram(message):
+
+    token = os.getenv("TELEGRAM_BOT_TOKEN")
+    chat_id = os.getenv("TELEGRAM_CHAT_ID")
+
+    if not token or not chat_id:
+        print("Telegramの設定が見つかりません")
+        return False
+
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+
+    data = {
+        "chat_id": chat_id,
+        "text": message
+    }
+
+    encoded_data = urllib.parse.urlencode(data).encode("utf-8")
+
+    request = urllib.request.Request(
+        url,
+        data=encoded_data,
+        method="POST"
+    )
+
+    try:
+        with urllib.request.urlopen(
+            request, timeout=TIMEOUT
+        ) as response:
+            result = json.loads(response.read().decode("utf-8"))
+
+        if result.get("ok"):
+            print("Telegram送信成功")
+            return True
+
+        print("Telegram送信失敗:", result)
+        return False
+
+    except Exception as e:
+        print("Telegram送信エラー:", e)
+        return False
+
 def main():
 
     parser = argparse.ArgumentParser()
