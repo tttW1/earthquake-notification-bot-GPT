@@ -64,6 +64,61 @@ def find_element(element, *path):
 
     return current
 
+def extract_earthquake_details(root):
+
+    earthquake = find_element(
+        root, "Body", "Earthquake"
+    )
+
+    intensity = find_element(
+        root, "Body", "Intensity",
+        "Observation", "MaxInt"
+    )
+
+    if earthquake is None:
+        earthquake = None
+
+    origin_time = (
+        get_text(earthquake, "OriginTime")
+        if earthquake is not None else ""
+    )
+
+    hypocenter = find_element(
+        earthquake, "Hypocenter"
+    ) if earthquake is not None else None
+
+    area = find_element(hypocenter, "Area") \
+        if hypocenter is not None else None
+
+    epicenter = (
+        get_text(area, "Name")
+        if area is not None else ""
+    )
+
+    magnitude_element = find_element(
+        earthquake, "Magnitude"
+    ) if earthquake is not None else None
+
+    magnitude = ""
+
+    if magnitude_element is not None:
+        magnitude = (
+            magnitude_element.get("description")
+            or (magnitude_element.text or "").strip()
+        )
+
+    max_intensity = (
+        (intensity.text or "").strip()
+        if intensity is not None else ""
+    )
+
+    return {
+        "origin_time": origin_time,
+        "epicenter": epicenter,
+        "magnitude": magnitude,
+        "max_intensity": max_intensity
+    }
+
 def fetch_feed():
     return fetch_xml(URL)
 
