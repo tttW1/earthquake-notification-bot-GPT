@@ -1,10 +1,10 @@
-name: Test Earthquake Bot
+name: Earthquake Notification Bot
 
 on:
   workflow_dispatch:
 
 jobs:
-  test:
+  run:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,8 +19,16 @@ jobs:
       - name: Install requirements
         run: pip install -r requirements.txt
 
-      - name: Test Telegram connection
+      - name: Restore notification history
+        uses: actions/cache@v4
+        with:
+          path: seen_ids.json
+          key: earthquake-seen-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            earthquake-seen-
+
+      - name: Run earthquake information program
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: python -c "import main; main.send_telegram('地震情報ボットの接続テストです。Telegramへの送信に成功しました。')"
+        run: python main.py -n 5
