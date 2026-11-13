@@ -316,6 +316,24 @@ def load_seen_ids():
         print("通知履歴の読み込みに失敗しました")
         return []
 
+def save_seen_ids(seen_ids):
+
+    filename = "seen_ids.json"
+
+    try:
+        with open(filename, "w", encoding="utf-8") as f:
+            json.dump(
+                seen_ids,
+                f,
+                ensure_ascii=False,
+                indent=2
+            )
+
+        print("通知履歴を保存しました")
+
+    except OSError as e:
+        print("通知履歴の保存に失敗しました:", e)
+
 def main():
 
     parser = argparse.ArgumentParser()
