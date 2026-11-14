@@ -39,3 +39,7 @@ GitHub Actionsには `contents: write` 権限が必要です。
 
 - `TELEGRAM_BOT_TOKEN`
 - `TELEGRAM_CHAT_ID`
+
+出典：気象庁ホームページ（https://www.data.jma.go.jp/developer/index.html）
+通知文は、取得した情報を加工して作成しています。
+
