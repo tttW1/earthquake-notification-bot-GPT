@@ -593,9 +593,16 @@ def main():
         xml_data = fetch_feed()
         all_entries = parse_entries(xml_data)
     except Exception as error:
-        print("フィード取得エラー:", error)
-        return 1
+        error_time = datetime.now(JST).strftime("%Y年%m月%d日 %H:%M:%S")
+        error_message = (
+            "【気象庁フィード取得エラー】\n"
+            f"発生時刻：{error_time}\n"
+            f"エラー内容：{type(error).__name__}: {error}"
+        )
 
+        print("フィード取得エラー:", error)
+        send_telegram(error_message)
+        return 1
     entries = all_entries if args.all else filter_earthquakes(all_entries)
 
     print("フィード取得件数:", len(all_entries))
