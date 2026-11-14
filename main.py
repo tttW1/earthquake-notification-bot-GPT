@@ -282,6 +282,69 @@ def load_seen_ids():
         print("通知履歴の読み込みに失敗しました:", error)
         return []
 
+def load_seen_status():
+
+    if not os.path.exists(SEEN_IDS_FILE):
+
+        return {}
+
+    try:
+
+        with open(SEEN_IDS_FILE, "r", encoding="utf-8") as file:
+
+            data = json.load(file)
+
+        # 旧形式のリストを新形式に変換する。
+
+        if isinstance(data, list):
+
+            return {
+
+                item: {"status": "complete"}
+
+                for item in data
+
+                if isinstance(item, str)
+
+            }
+
+        # 新形式の辞書を読み込む。
+
+        if isinstance(data, dict):
+
+            statuses = {}
+
+            for entry_id, record in data.items():
+
+                if (
+
+                    isinstance(entry_id, str)
+
+                    and isinstance(record, dict)
+
+                    and record.get("status") in ("incomplete", "complete")
+
+                ):
+
+                    statuses[entry_id] = {
+
+                        "status": record["status"]
+
+                    }
+
+            return statuses
+
+        print("通知履歴の形式が不正です。空の履歴として扱います。")
+
+        return {}
+
+    except (json.JSONDecodeError, OSError) as error:
+
+        print("通知履歴の読み込みに失敗しました:", error)
+
+        return {}
+
+
 
 def save_seen_ids(seen_ids):
     temporary_file = SEEN_IDS_FILE + ".tmp"
