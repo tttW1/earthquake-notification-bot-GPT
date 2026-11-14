@@ -449,7 +449,7 @@ def process_entries(entries):
             print("送信に失敗したため、後続の通知を次回実行に持ち越します。")
             return 1
 
-        seen_ids.append(item["entry"]["id"])
+        seen_ids.append(get_entry_id(item["entry"]))
         seen_ids = list(dict.fromkeys(seen_ids))[-500:]
 
         # 1件成功するごとに履歴ファイルへ保存する。
