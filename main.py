@@ -404,7 +404,7 @@ def process_entries(entries):
 
     # 詳細電文から正式な発表時刻を取得してから、時系列順に並べる。
     for entry in entries:
-        entry_id = entry.get("id", "")
+        entry_id = get_entry_id(entry)
         if not entry_id or entry_id in seen_set:
             if entry_id in seen_set:
                 print("通知済みのためスキップ:", entry_id)
