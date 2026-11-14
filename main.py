@@ -442,6 +442,8 @@ def build_message(entry, detail, category):
 
     if entry.get("link"):
         lines.append(f"詳細：{entry['link']}")
+    if not detail.get("success", False):
+        lines.append("※詳細情報の取得に失敗したため、一部情報が未取得です")
 
     return "\n".join(lines)
 
