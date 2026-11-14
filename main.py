@@ -610,6 +610,22 @@ def main():
 
     return process_entries(entries)
 
+def run_with_error_notification():
+    try:
+        return main()
+
+    except Exception as error:
+        error_time = datetime.now(JST).strftime("%Y年%m月%d日 %H:%M:%S")
+
+        error_message = (
+            "【プログラム実行エラー】\n"
+            f"発生時刻：{error_time}\n"
+            f"エラー内容：{type(error).__name__}: {error}"
+        )
+
+        print("予期しないプログラムエラー:", error)
+        send_telegram(error_message)
+        return 1
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(run_with_error_notification())
