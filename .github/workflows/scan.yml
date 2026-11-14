@@ -1,0 +1,11 @@
+name: Secret scan
+on: workflow_dispatch
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: |
+          git log -p --all | grep -En '[0-9]{8,10}:[A-Za-z0-9_-]{35}' || echo "見つかりませんでした"
