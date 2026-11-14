@@ -188,6 +188,10 @@ def parse_entries(xml_data):
 
     return entries
 
+def get_entry_id(entry):
+    """通知履歴にはXMLのURLを優先して使用する。"""
+    return entry.get("link") or entry.get("id", "")
+
 
 def is_tsunami_information(title):
     return "津波" in (title or "")
