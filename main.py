@@ -28,13 +28,43 @@ EARTHQUAKE_KEYWORDS = ("地震", "震度", "震源")
 
 
 def fetch_xml(url):
-    request = urllib.request.Request(
-        url,
-        headers={"User-Agent": "EarthquakeBot/1.0"},
-    )
-    with urllib.request.urlopen(request, timeout=TIMEOUT) as response:
-        return response.read()
+    max_attempts = 3
 
+    for attempt in range(1, max_attempts + 1):
+        request = urllib.request.Request(
+            url,
+            headers={"User-Agent": "EarthquakeBot/1.0"},
+        )
+
+        try:
+            with urllib.request.urlopen(request, timeout=TIMEOUT) as response:
+                return response.read()
+
+        except urllib.error.HTTPError as error:
+            retryable = error.code == 429 or 500 <= error.code <= 599
+
+            if not retryable or attempt == max_attempts:
+                raise
+
+            wait_time = 2 * attempt
+            print(
+                f"XML取得失敗（HTTP {error.code}）。"
+                f"{wait_time}秒後に再試行します "
+                f"({attempt}/{max_attempts})"
+            )
+            time.sleep(wait_time)
+
+        except (urllib.error.URLError, TimeoutError, OSError) as error:
+            if attempt == max_attempts:
+                raise
+
+            wait_time = 2 * attempt
+            print(
+                f"XML取得エラー: {error}。"
+                f"{wait_time}秒後に再試行します "
+                f"({attempt}/{max_attempts})"
+            )
+            time.sleep(wait_time)
 
 def get_text(element, *path):
     current = element
