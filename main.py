@@ -464,17 +464,21 @@ def chronological_key(prepared_entry):
 
 
 def process_entries(entries):
-    seen_ids = load_seen_ids()
-    seen_set = set(seen_ids)
+    seen_status = load_seen_status()
 
     prepared = []
 
     # 詳細電文から正式な発表時刻を取得してから、時系列順に並べる。
     for entry in entries:
         entry_id = get_entry_id(entry)
-        if not entry_id or entry_id in seen_set:
-            if entry_id in seen_set:
-                print("通知済みのためスキップ:", entry_id)
+        if not entry_id:
+            continue
+
+        previous_status = seen_status.get(entry_id, {}).get("status")
+
+        # 完全版を通知済みならスキップする。
+        if previous_status == "complete":
+            print("完全版を通知済みのためスキップ:", entry_id)
             continue
 
         if is_tsunami_information(entry.get("title", "")):
@@ -490,18 +494,24 @@ def process_entries(entries):
         if category is None:
             continue
 
+        # 不完全通知済みで、今回も取得失敗なら再通知しない。
+        if previous_status == "incomplete" and not detail.get("success", False):
+            print("詳細情報の再取得に失敗。次回再試行:", entry_id)
+            continue
+
         prepared.append({
             "entry": entry,
             "detail": detail,
             "title": title,
             "category": category,
+            "previous_status": previous_status,
         })
 
     prepared.sort(key=chronological_key)
 
     print("通知候補件数:", len(prepared))
 
-    # 送信失敗時はそこで止める。後の時刻の情報を先に通知しないため。
+    # 送信失敗時はそこで止める。
     for index, item in enumerate(prepared):
         message = build_message(
             item["entry"],
@@ -516,11 +526,18 @@ def process_entries(entries):
             print("送信に失敗したため、後続の通知を次回実行に持ち越します。")
             return 1
 
-        seen_ids.append(get_entry_id(item["entry"]))
-        seen_ids = list(dict.fromkeys(seen_ids))[-500:]
+        entry_id = get_entry_id(item["entry"])
+
+        if item["detail"].get("success", False):
+            seen_status[entry_id] = {"status": "complete"}
+        else:
+            seen_status[entry_id] = {"status": "incomplete"}
+
+        # 履歴は最新500件を保持する。
+        seen_status = dict(list(seen_status.items())[-500:])
 
         # 1件成功するごとに履歴ファイルへ保存する。
-        if not save_seen_ids(seen_ids):
+        if not save_seen_ids(seen_status):
             print("履歴を保存できないため、後続の通知を停止します。")
             return 1
 
