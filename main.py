@@ -233,6 +233,7 @@ def classify_information(title):
 
 def fetch_detail(url):
     result = {
+        "success": False,
         "title": "",
         "report_time": "",
         "origin_time": "",
@@ -255,6 +256,7 @@ def fetch_detail(url):
         # 気象庁電文の発表時刻。取得できない場合はAtomのupdatedを使う。
         result["report_time"] = get_text(root, "Head", "ReportDateTime")
         result.update(extract_earthquake_details(root))
+        result["success"] = True
 
     except Exception as error:
         print("詳細情報取得エラー:", error)
