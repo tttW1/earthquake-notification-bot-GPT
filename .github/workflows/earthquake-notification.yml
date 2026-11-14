@@ -20,17 +20,21 @@ jobs:
 
     steps:
       - name: Get source code
+        id: get_source
         uses: actions/checkout@v4
 
       - name: Set up Python
+        id: setup_python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
       - name: Install requirements
+        id: install_requirements
         run: pip install -r requirements.txt
 
       - name: Initialize notification history
+        id: initialize_history
         run: |
           if [ ! -f seen_ids.json ]; then
             printf '[]\n' > seen_ids.json
@@ -44,6 +48,7 @@ jobs:
 
       # Python処理が途中で失敗しても、それまでに保存した履歴をコミットする
       - name: Commit notification history
+        id: commit_history
         if: always() && !cancelled()
         run: |
           git config user.name "github-actions[bot]"
@@ -57,3 +62,23 @@ jobs:
             git commit -m "Update earthquake notification history"
             git push
           fi
+
+      - name: Notify workflow error
+        if: ${{ failure() && (steps.get_source.outcome == 'failure' || steps.setup_python.outcome == 'failure' || steps.install_requirements.outcome == 'failure' || steps.initialize_history.outcome == 'failure' || steps.commit_history.outcome == 'failure') }}
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          ERROR_TIME=$(TZ=Asia/Tokyo date '+%Y年%m月%d日 %H:%M:%S')
+          MESSAGE=$(printf '【GitHub Actionsエラー】\n発生時刻：%s\nエラー箇所：ワークフロー処理\n詳細：GitHub Actionsの実行ログを確認してください。' "$ERROR_TIME")
+
+          if [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
+            echo "Telegramの設定がないため、エラー通知を送信できません。"
+            exit 1
+          fi
+
+          curl --fail --silent --show-error --max-time 20 \
+            --request POST \
+            --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
+            --data-urlencode "text=${MESSAGE}" \
+            "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage"
