@@ -143,6 +143,9 @@ def format_time(value, include_seconds=False):
 
 def extract_earthquake_details(root):
     earthquake = find_element(root, "Body", "Earthquake")
+    observation = find_element(
+        root, "Body", "Intensity", "Observation"
+    )
     intensity = find_element(
         root, "Body", "Intensity", "Observation", "MaxInt"
     )
@@ -175,18 +178,78 @@ def extract_earthquake_details(root):
             depth = "ごく浅い"
 
     max_intensity = (
-        (intensity.text or "").strip()
+        to_half_width((intensity.text or "").strip())
         if intensity is not None else ""
     )
+
+    observation_stations = []
+    seen_station_codes = set()
+
+    if observation is not None:
+        for pref in observation:
+            if pref.tag.split("}")[-1] != "Pref":
+                continue
+
+            for area_element in pref:
+                if area_element.tag.split("}")[-1] != "Area":
+                    continue
+
+                for city in area_element:
+                    if city.tag.split("}")[-1] != "City":
+                        continue
+
+                    city_name = get_text(city, "Name")
+
+                    for station in city:
+                        if station.tag.split("}")[-1] != "IntensityStation":
+                            continue
+
+                        station_name = get_text(station, "Name")
+                        station_code = get_text(station, "Code")
+                        station_intensity = to_half_width(
+                            get_text(station, "Int")
+                        )
+
+                        if not station_name or not station_intensity:
+                            continue
+
+                        # 観測点コードを使って同一地点の重複を防ぐ。
+                        # コードがない場合は市町村名と観測点名を使う。
+                        station_key = (
+                            station_code
+                            or f"{city_name}|{station_name}"
+                        )
+
+                        if station_key in seen_station_codes:
+                            continue
+
+                        seen_station_codes.add(station_key)
+
+                        observation_stations.append({
+                            "name": station_name,
+                            "city": city_name,
+                            "code": station_code,
+                            "intensity": station_intensity,
+                        })
+
+    max_intensity_station_count = None
+
+    if max_intensity and observation_stations:
+        max_intensity_station_count = sum(
+            1
+            for station in observation_stations
+            if station["intensity"] == max_intensity
+        )
 
     return {
         "origin_time": origin_time,
         "epicenter": to_half_width(epicenter),
         "depth": depth,
         "magnitude": to_half_width(magnitude),
-        "max_intensity": to_half_width(max_intensity),
+        "max_intensity": max_intensity,
+        "observation_stations": observation_stations,
+        "max_intensity_station_count": max_intensity_station_count,
     }
-
 
 def fetch_feed():
     return fetch_xml(FEED_URL)
