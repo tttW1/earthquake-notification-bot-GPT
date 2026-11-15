@@ -49,8 +49,12 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: python main.py
-
+        run: |
+          if [ "${{ inputs.test_notification }}" = "true" ]; then
+            python main.py --test-notification
+          else
+            python main.py
+          fi
       # Python処理が途中で失敗しても、それまでに保存した履歴をコミットする
       - name: Commit notification history
         id: commit_history
