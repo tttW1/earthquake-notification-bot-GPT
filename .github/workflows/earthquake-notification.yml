@@ -2,9 +2,14 @@ name: Earthquake Notification Bot
 
 on:
   workflow_dispatch:
+    inputs:
+      test_notification:
+        description: "Telegramテスト通知を実行する"
+        required: false
+        type: boolean
+        default: false
   schedule:
     - cron: "*/5 * * * *"
-
 # seen_ids.jsonをリポジトリへコミットするために必要
 permissions:
   contents: write
