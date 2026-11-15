@@ -725,6 +725,12 @@ def main():
         action="store_true",
         help="地震関連以外も含めてフィード項目を処理候補にします（津波は常に除外）。",
     )
+    
+    parser.add_argument(
+        "--test-notification",
+        action="store_true",
+        help="Telegramへのテスト通知だけを実行します。",
+    )
     args = parser.parse_args()
 
     try:
