@@ -502,6 +502,81 @@ def send_telegram(message):
         return False
 
 
+
+def send_telegram_in_parts(message, max_length=3500):
+    """長文をTelegramの文字数制限内に分割して送信する。"""
+    parts = [
+        message[i:i + max_length]
+        for i in range(0, len(message), max_length)
+    ]
+
+    total = len(parts)
+
+    for index, part in enumerate(parts, start=1):
+        header = (
+            "【テスト・架空の地震情報／"
+            f"長文分割 {index}/{total}】\n"
+        )
+
+        if not send_telegram(header + part):
+            return False
+
+        if index < total:
+            time.sleep(1.1)
+
+    return True
+
+
+def run_notification_test():
+    """架空の地震情報をTelegramへ送信して動作確認する。"""
+
+    max_intensity_message = """【テスト・架空の地震情報】
+【震源・震度情報】
+発生時刻：2026年11月15日 12:00
+震央地名：架空県沖
+震源の深さ：10km
+マグニチュード：M7.5
+最大震度：7
+最大震度を観測した地点数：2地点
+
+【観測点別震度】
+架空市架空町：震度7
+架空市架空地区：震度7
+"""
+
+    no_intensity_message = """【テスト・架空の地震情報】
+【震度速報】
+発生時刻：2026年11月15日 12:00
+震央地名：架空県沖
+マグニチュード：M5.0
+最大震度：未入電
+"""
+
+    long_message = (
+        "【テスト・架空の地震情報】\n"
+        "これは長文分割を確認するための架空の文章です。\n"
+        * 250
+    )
+
+    messages = [
+        max_intensity_message,
+        no_intensity_message,
+    ]
+
+    for message in messages:
+        if not send_telegram(message):
+            print("テスト通知に失敗しました。")
+            return 1
+        time.sleep(1.1)
+
+    if not send_telegram_in_parts(long_message):
+        print("長文テスト通知に失敗しました。")
+        return 1
+
+    print("すべてのテスト通知を送信しました。")
+    return 0
+
+
 def build_message(entry, detail, category):
     lines = [f"【{category}】"]
 
