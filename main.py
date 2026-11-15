@@ -733,6 +733,9 @@ def main():
     )
     args = parser.parse_args()
 
+    if args.test_notification:
+        return run_notification_test()
+
     try:
         xml_data = fetch_feed()
         all_entries = parse_entries(xml_data)
