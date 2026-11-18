@@ -181,5 +181,38 @@
   },
   "https://www.data.jma.go.jp/developer/xml/data/20261118182446_0_VXSE53_010000.xml": {
     "status": "complete"
+  },
+  "https://www.data.jma.go.jp/developer/xml/data/20261118183029_0_VXSE53_010000.xml": {
+    "status": "complete"
+  },
+  "https://www.data.jma.go.jp/developer/xml/data/20261118183620_0_VXSE53_010000.xml": {
+    "status": "complete"
+  },
+  "https://www.data.jma.go.jp/developer/xml/data/20261118183842_0_VXSE53_010000.xml": {
+    "status": "complete"
+  },
+  "https://www.data.jma.go.jp/developer/xml/data/20261118184011_0_VXSE53_010000.xml": {
+    "status": "complete"
+  },
+  "https://www.data.jma.go.jp/developer/xml/data/20261118184706_0_VXSE53_010000.xml": {
+    "status": "complete"
+  },
+  "https://www.data.jma.go.jp/developer/xml/data/20261118185045_0_VXSE53_010000.xml": {
+    "status": "complete"
+  },
+  "https://www.data.jma.go.jp/developer/xml/data/20261118191331_0_VXSE53_010000.xml": {
+    "status": "complete"
+  },
+  "https://www.data.jma.go.jp/developer/xml/data/20261118191727_0_VXSE53_010000.xml": {
+    "status": "complete"
+  },
+  "https://www.data.jma.go.jp/developer/xml/data/20261118192153_0_VXSE53_010000.xml": {
+    "status": "complete"
+  },
+  "https://www.data.jma.go.jp/developer/xml/data/20261118192525_0_VXSE61_010000.xml": {
+    "status": "complete"
+  },
+  "https://www.data.jma.go.jp/developer/xml/data/20261118192634_0_VXSE53_010000.xml": {
+    "status": "complete"
   }
 }
