@@ -112,5 +112,20 @@
   },
   "https://www.data.jma.go.jp/developer/xml/data/20261118162001_0_VXSE53_270000.xml": {
     "status": "complete"
+  },
+  "https://www.data.jma.go.jp/developer/xml/data/20261118164154_0_VXSE53_270000.xml": {
+    "status": "complete"
+  },
+  "https://www.data.jma.go.jp/developer/xml/data/20261118172356_0_VXSE51_010000.xml": {
+    "status": "complete"
+  },
+  "https://www.data.jma.go.jp/developer/xml/data/20261118172457_0_VXSE51_010000.xml": {
+    "status": "complete"
+  },
+  "https://www.data.jma.go.jp/developer/xml/data/20261118172521_0_VXSE52_010000.xml": {
+    "status": "complete"
+  },
+  "https://www.data.jma.go.jp/developer/xml/data/20261118172647_0_VXSE53_010000.xml": {
+    "status": "complete"
   }
 }
