@@ -238,5 +238,11 @@
   },
   "https://www.data.jma.go.jp/developer/xml/data/20261118200539_0_VXSE53_010000.xml": {
     "status": "complete"
+  },
+  "https://www.data.jma.go.jp/developer/xml/data/20261118202735_0_VXSE53_010000.xml": {
+    "status": "complete"
+  },
+  "https://www.data.jma.go.jp/developer/xml/data/20261118211906_0_VXSE53_010000.xml": {
+    "status": "complete"
   }
 }
