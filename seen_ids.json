@@ -517,5 +517,8 @@
   },
   "https://www.data.jma.go.jp/developer/xml/data/20261123210326_0_VXSE53_270000.xml": {
     "status": "complete"
+  },
+  "https://www.data.jma.go.jp/developer/xml/data/20261124082351_0_VXSE53_270000.xml": {
+    "status": "complete"
   }
 }
